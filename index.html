@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vad fan är vädret</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(-45deg, #2980B9, #6DD5FA);
+      background-size: 400% 400%;
+      animation: gradientBG 30s ease infinite;
+      color: white;
+      overflow-x: hidden;
+      overflow-y: hidden;
+      text-align: center;
+      height: 100vh;
+      position: relative;
+    }
+    @keyframes gradientBG {
+      0%{background-position:0% 50%;}
+      50%{background-position:100% 50%;}
+      100%{background-position:0% 50%;}
+    }
+
+    .weather-card {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 20px 40px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      margin-bottom: 20px;
+      min-width: 320px;
+      position: relative;
+      z-index: 10;
+    }
+    .weather-card i {
+      margin: 10px 0;
+    }
+    .temp {
+      font-size: 2em;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 1em;
+      border: 2px solid white;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.3);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+      position: relative;
+      z-index: 10;
+    }
+    button:hover {
+      background: rgba(255,255,255,0.6);
+    }
+
+    /* Bas-moln */
+    .cloud {
+      position: absolute;
+      background: #fff;
+      background: linear-gradient(to bottom, #fff 5%, #ccc 100%);
+      border-radius: 50px;
+      box-shadow: 20px 20px 15px rgba(0,0,0,0.1);
+      opacity: 0.8;
+      filter: drop-shadow(0 0 5px rgba(255 255 255 / 0.2));
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      z-index: 1;
+    }
+    .cloud1 {
+      width: 120px;
+      height: 70px;
+      top: 40px;
+      left: -150px;
+      animation-name: moveClouds1;
+      animation-duration: 80s;
+    }
+    .cloud2 {
+      width: 180px;
+      height: 90px;
+      top: 90px;
+      left: -220px;
+      animation-name: moveClouds2;
+      animation-duration: 100s;
+      opacity: 0.6;
+    }
+    @keyframes moveClouds1 {
+      0% { left: -150px; }
+      100% { left: 110vw; }
+    }
+    @keyframes moveClouds2 {
+      0% { left: -220px; }
+      100% { left: 110vw; }
+    }
+
+    /* Extra moln container för mulet */
+    #extra-clouds {
+      position: fixed;
+      top: 10vh;
+      left: 0;
+      width: 100vw;
+      height: 80vh;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 2;
+    }
+    .extra-cloud {
+      position: absolute;
+      background: #eee;
+      background: linear-gradient(to bottom, #eee 5%, #bbb 100%);
+      border-radius: 50px;
+      box-shadow: 15px 15px 15px rgba(0,0,0,0.1);
+      opacity: 0.7;
+      filter: drop-shadow(0 0 4px rgba(255 255 255 / 0.15));
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-name: moveExtraClouds;
+    }
+    @keyframes moveExtraClouds {
+      0% { left: -200px; }
+      100% { left: 110vw; }
+    }
+
+    /* Regndroppar */
+    #rain-container {
+      pointer-events:none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 5;
+      overflow: visible;
+    }
+    .raindrop {
+      position: absolute;
+      bottom: 100%;
+      width: 2px;
+      height: 15px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      animation-name: fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      opacity: 0.6;
+      filter: drop-shadow(0 0 2px rgba(255 255 255 / 0.3));
+    }
+    @keyframes fall {
+      0% {
+        transform: translateY(0);
+        opacity: 0.6;
+      }
+      80% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Vad fan är vädret</h1>
+
+  <div id="weather" class="weather-card animate__animated">
+    <p>Läser väderdata...</p>
+  </div>
+  <div>
+    <button id="tomorrow-btn">Vilket jävla väder är det i morgon för i helvete</button>
+    <button id="today-btn" style="display:none;">Tillbaka till dagens jävla väder</button>
+  </div>
+
+  <!-- Basmoln -->
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+
+  <!-- Extra molncontainer -->
+  <div id="extra-clouds"></div>
+
+  <!-- Regncontainer -->
+  <div id="rain-container"></div>
+
+  <script>
+    const rainContainer = document.getElementById('rain-container');
+    const extraCloudsContainer = document.getElementById('extra-clouds');
+    const weatherDiv = document.getElementById('weather');
+    const tomorrowBtn = document.getElementById('tomorrow-btn');
+    const todayBtn = document.getElementById('today-btn');
+
+    function createRain() {
+      rainContainer.innerHTML = '';
+      const rainCount = 80;
+      for(let i = 0; i < rainCount; i++) {
+        const drop = document.createElement('div');
+        drop.classList.add('raindrop');
+        drop.style.left = Math.random() * 100 + 'vw';
+        drop.style.animationDuration = (0.8 + Math.random() * 0.7) + 's';
+        drop.style.animationDelay = (Math.random() * 5) + 's';
+        drop.style.height = (10 + Math.random() * 10) + 'px';
+        drop.style.opacity = 0.4 + Math.random() * 0.6;
+        rainContainer.appendChild(drop);
+      }
+    }
+
+    function clearRain() {
+      rainContainer.innerHTML = '';
+    }
+
+    function createExtraClouds() {
+      extraCloudsContainer.innerHTML = '';
+      const count = 10;
+      for(let i=0; i<count; i++) {
+        const cloud = document.createElement('div');
+        cloud.classList.add('extra-cloud');
+        const size = 60 + Math.random() * 100;
+        cloud.style.width = size + 'px';
+        cloud.style.height = (size * 0.6) + 'px';
+        cloud.style.top = (Math.random() * 60 + 10) + 'vh';
+        cloud.style.left = (-200 - Math.random() * 200) + 'px';
+        cloud.style.animationDuration = (40 + Math.random() * 40) + 's';
+        cloud.style.opacity = 0.3 + Math.random() * 0.4;
+        extraCloudsContainer.appendChild(cloud);
+      }
+    }
+
+    function clearExtraClouds() {
+      extraCloudsContainer.innerHTML = '';
+    }
+
+    function getIconDesc(code) {
+      let icon = 'fa-cloud', desc = 'Okänt';
+      if (code === 0) { icon='fa-sun'; desc='Klart'; }
+      else if (code === 1) { icon='fa-sun'; desc='Lätt molnighet'; }
+      else if (code === 2) { icon='fa-cloud-sun'; desc='Halvklart'; }
+      else if (code === 3) { icon='fa-cloud'; desc='Mulet'; }
+      else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
+        icon='fa-cloud-showers-heavy'; desc='Regn';
+      }
+      else if (code >= 71 && code <= 77) {
+        icon='fa-snowflake'; desc='Snö';
+      }
+      else if (code >= 95) {
+        icon='fa-cloud-bolt'; desc='Åska';
+      }
+      return { icon, desc };
+    }
+
+    function updateWeather(index, data) {
+      const code = data.daily.weathercode[index];
+      const max = Math.round(data.daily.temperature_2m_max[index]);
+      const min = Math.round(data.daily.temperature_2m_min[index]);
+      const { icon, desc } = getIconDesc(code);
+      weatherDiv.innerHTML = `
+        <h2>Din plats</h2>
+        <p>${index===0 ? 'Idag' : 'Imorgon'}</p>
+        <i class="fa-solid ${icon} fa-5x"></i>
+        <p class="temp">${max}°C / ${min}°C</p>
+        <p>${desc}</p>
+      `;
+      weatherDiv.classList.add('animate__fadeIn');
+      weatherDiv.classList.remove('animate__fadeOut');
+
+      // Regn
+      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
+        createRain();
+      } else {
+        clearRain();
+      }
+
+      // Extra moln när mulet
+      if (code === 3) {
+        createExtraClouds();
+      } else {
+        clearExtraClouds();
+      }
+    }
+
+    function fetchWeather(lat, lon) {
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`)
+        .then(response => response.json())
+        .then(data => {
+          updateWeather(0, data);
+          tomorrowBtn.addEventListener('click', () => {
+            updateWeather(1, data);
+            tomorrowBtn.style.display = 'none';
+            todayBtn.style.display = 'inline-block';
+          });
+          todayBtn.addEventListener('click', () => {
+            updateWeather(0, data);
+            todayBtn.style.display = 'none';
+            tomorrowBtn.style.display = 'inline-block';
+          });
+        })
+        .catch(err => {
+          weatherDiv.innerHTML = '<p>Kunde inte hämta vädret.</p>';
+          console.error(err);
+        });
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          fetchWeather(position.coords.latitude, position.coords.longitude);
+        },
+        error => {
+          console.warn('Geolocation misslyckades eller nekades, visar Stockholm som standard.');
+          fetchWeather(59.3293, 18.0686); // fallback till Stockholm
+        }
+      );
+    } else {
+      console.warn('Geolocation inte tillgängligt, visar Stockholm som standard.');
+      fetchWeather(59.3293, 18.0686); // fallback till Stockholm
+    }
+  </script>
+</body>
+</html>
