@@ -1,325 +1,404 @@
-<!DOCTYPE html>
-<html lang="sv">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Vad fan är vädret</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-  <style>
-    body {
-      margin: 0; padding: 0;
-      font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(-45deg, #2980B9, #6DD5FA);
-      background-size: 400% 400%;
-      animation: gradientBG 30s ease infinite;
-      color: white;
-      overflow-x: hidden;
-      overflow-y: hidden;
-      text-align: center;
-      height: 100vh;
-      position: relative;
-    }
-    @keyframes gradientBG {
-      0%{background-position:0% 50%;}
-      50%{background-position:100% 50%;}
-      100%{background-position:0% 50%;}
-    }
-
-    .weather-card {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 20px 40px;
-      border-radius: 10px;
-      backdrop-filter: blur(10px);
-      margin-bottom: 20px;
-      min-width: 320px;
-      position: relative;
-      z-index: 10;
-    }
-    .weather-card i {
-      margin: 10px 0;
-    }
-    .temp {
-      font-size: 2em;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 1em;
-      border: 2px solid white;
-      border-radius: 5px;
-      background: rgba(255,255,255,0.3);
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
-      position: relative;
-      z-index: 10;
-    }
-    button:hover {
-      background: rgba(255,255,255,0.6);
-    }
-
-    /* Bas-moln */
-    .cloud {
-      position: absolute;
-      background: #fff;
-      background: linear-gradient(to bottom, #fff 5%, #ccc 100%);
-      border-radius: 50px;
-      box-shadow: 20px 20px 15px rgba(0,0,0,0.1);
-      opacity: 0.8;
-      filter: drop-shadow(0 0 5px rgba(255 255 255 / 0.2));
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      z-index: 1;
-    }
-    .cloud1 {
-      width: 120px;
-      height: 70px;
-      top: 40px;
-      left: -150px;
-      animation-name: moveClouds1;
-      animation-duration: 80s;
-    }
-    .cloud2 {
-      width: 180px;
-      height: 90px;
-      top: 90px;
-      left: -220px;
-      animation-name: moveClouds2;
-      animation-duration: 100s;
-      opacity: 0.6;
-    }
-    @keyframes moveClouds1 {
-      0% { left: -150px; }
-      100% { left: 110vw; }
-    }
-    @keyframes moveClouds2 {
-      0% { left: -220px; }
-      100% { left: 110vw; }
-    }
-
-    /* Extra moln container för mulet */
-    #extra-clouds {
-      position: fixed;
-      top: 10vh;
-      left: 0;
-      width: 100vw;
-      height: 80vh;
-      pointer-events: none;
-      overflow: visible;
-      z-index: 2;
-    }
-    .extra-cloud {
-      position: absolute;
-      background: #eee;
-      background: linear-gradient(to bottom, #eee 5%, #bbb 100%);
-      border-radius: 50px;
-      box-shadow: 15px 15px 15px rgba(0,0,0,0.1);
-      opacity: 0.7;
-      filter: drop-shadow(0 0 4px rgba(255 255 255 / 0.15));
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      animation-name: moveExtraClouds;
-    }
-    @keyframes moveExtraClouds {
-      0% { left: -200px; }
-      100% { left: 110vw; }
-    }
-
-    /* Regndroppar */
-    #rain-container {
-      pointer-events:none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 5;
-      overflow: visible;
-    }
-    .raindrop {
-      position: absolute;
-      bottom: 100%;
-      width: 2px;
-      height: 15px;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 50%;
-      animation-name: fall;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      opacity: 0.6;
-      filter: drop-shadow(0 0 2px rgba(255 255 255 / 0.3));
-    }
-    @keyframes fall {
-      0% {
-        transform: translateY(0);
-        opacity: 0.6;
-      }
-      80% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(110vh);
-        opacity: 0;
-      }
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lightsaber Game</title>
+<style>
+  html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;background:#090e15;color:#a5b1b9;display:flex;align-items:center;justify-content:center}
+  #gameWrap{width:960px;max-width:98vw;padding:12px;border-radius:12px;box-shadow:0 8px 30px rgba(189,182,182,0.4);background:#07101a}
+  canvas{display:block;width:100%;height:600px;border-radius:8px;background: radial-gradient(circle at 30% 20%, #0b1220, #05060a);}
+  #hud{margin-top:8px;display:flex;gap:8px;align-items:center;justify-content:space-between;color:#c7d7e0}
+  .hint{opacity:0.8;font-size:13px}
+</style>
 </head>
 <body>
-  <h1>Vad fan är vädret</h1>
-
-  <div id="weather" class="weather-card animate__animated">
-    <p>Läser väderdata...</p>
-  </div>
-  <div>
-    <button id="tomorrow-btn">Vilket jävla väder är det i morgon för i helvete</button>
-    <button id="today-btn" style="display:none;">Tillbaka till dagens jävla väder</button>
+  <div id="gameWrap">
+    <canvas id="c" width="960" height="600"></canvas>
+    <div id="hud">
+      <div class="hint">Move: WASD • Throw: R (50% energy) • Parry toggle: Right Click • Colors: 1 green / 2 blue / 3 red • Pause: Space</div>
+      <div id="score">Score: 0</div>
+    </div>
   </div>
 
-  <!-- Basmoln -->
-  <div class="cloud cloud1"></div>
-  <div class="cloud cloud2"></div>
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const scoreEl = document.getElementById('score');
 
-  <!-- Extra molncontainer -->
-  <div id="extra-clouds"></div>
+  // Input
+  const input = { w:0,a:0,s:0,d:0, mouseX: W/2, mouseY: H/2, mouseDown:false };
 
-  <!-- Regncontainer -->
-  <div id="rain-container"></div>
+  // Colors (1=green,2=blue,3=red)
+  const saberColors = ['#7efc9a','#4b7bff','#ff4b4b'];
 
-  <script>
-    const rainContainer = document.getElementById('rain-container');
-    const extraCloudsContainer = document.getElementById('extra-clouds');
-    const weatherDiv = document.getElementById('weather');
-    const tomorrowBtn = document.getElementById('tomorrow-btn');
-    const todayBtn = document.getElementById('today-btn');
+  // Player
+  const player = {
+    x: W/2, y: H/2, r: 14, speed: 220,
+    hp: 100, maxHp: 100,
+    energy: 100, maxEnergy: 100,
+    dashCooldown: 0, inv: 0, dashing: false, dashTime: 0,
+    saberColor: saberColors[0], trail: [], color: '#99a',
+    swingAngle: 0, throwing: false, parryMode: false
+  };
 
-    function createRain() {
-      rainContainer.innerHTML = '';
-      const rainCount = 80;
-      for(let i = 0; i < rainCount; i++) {
-        const drop = document.createElement('div');
-        drop.classList.add('raindrop');
-        drop.style.left = Math.random() * 100 + 'vw';
-        drop.style.animationDuration = (0.8 + Math.random() * 0.7) + 's';
-        drop.style.animationDelay = (Math.random() * 5) + 's';
-        drop.style.height = (10 + Math.random() * 10) + 'px';
-        drop.style.opacity = 0.4 + Math.random() * 0.6;
-        rainContainer.appendChild(drop);
+  let paused = false;
+  let lastTime = 0;
+  let score = 0;
+
+  // Enemies
+  const enemies = [];
+  const enemyTypes = [
+    { r:12, speed:80, hp:10, score:10, color:'#ffb86b' },
+    { r:18, speed:55, hp:25, score:25, color:'#ff9aa2' }
+  ];
+  let spawnTimer = 0;
+
+  // Thrown saber (boomerang)
+  // null or object: { x,y,angle,dist,maxDist,returning,hitEnemies:Set, hits, reattachFlag }
+  let thrownSaber = null;
+
+  // helpers
+  const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+  const rand = (a,b) => a + Math.random()*(b-a);
+
+  // Input listeners
+  window.addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if(k==='w') input.w=1;
+    if(k==='s') input.s=1;
+    if(k==='a') input.a=1;
+    if(k==='d') input.d=1;
+    if(k==='q' || k==='e'){
+      if(player.energy>20 && player.dashCooldown<=0 && (input.w||input.a||input.s||input.d)){
+        player.dashTime = 0.1; player.dashing = true; player.energy -= 20; player.dashCooldown = 0.2; player.trail = [];
       }
     }
+    if(k===' ') { paused = !paused; }
+    if(k==='r') attemptThrow();
+    if(k==='1') player.saberColor = saberColors[0];
+    if(k==='2') player.saberColor = saberColors[1];
+    if(k==='3') player.saberColor = saberColors[2];
+  });
+  window.addEventListener('keyup', e => {
+    const k = e.key.toLowerCase();
+    if(k==='w') input.w=0;
+    if(k==='s') input.s=0;
+    if(k==='a') input.a=0;
+    if(k==='d') input.d=0;
+  });
 
-    function clearRain() {
-      rainContainer.innerHTML = '';
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    input.mouseX = (e.clientX - rect.left) * (canvas.width/rect.width);
+    input.mouseY = (e.clientY - rect.top) * (canvas.height/rect.height);
+  });
+
+  // Left click only used for swing (we handle continuous melee), right click toggles parry
+  canvas.addEventListener('mousedown', e => {
+    input.mouseDown = true;
+    if(e.button === 2) { // right-click toggle parry mode
+      player.parryMode = !player.parryMode;
     }
+  });
+  canvas.addEventListener('mouseup', ()=> input.mouseDown = false);
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
 
-    function createExtraClouds() {
-      extraCloudsContainer.innerHTML = '';
-      const count = 10;
-      for(let i=0; i<count; i++) {
-        const cloud = document.createElement('div');
-        cloud.classList.add('extra-cloud');
-        const size = 60 + Math.random() * 100;
-        cloud.style.width = size + 'px';
-        cloud.style.height = (size * 0.6) + 'px';
-        cloud.style.top = (Math.random() * 60 + 10) + 'vh';
-        cloud.style.left = (-200 - Math.random() * 200) + 'px';
-        cloud.style.animationDuration = (40 + Math.random() * 40) + 's';
-        cloud.style.opacity = 0.3 + Math.random() * 0.4;
-        extraCloudsContainer.appendChild(cloud);
-      }
+  // Attempt to throw saber
+  function attemptThrow(){
+    if(player.throwing) return;
+    if(player.energy < player.maxEnergy * 0.5) return;
+    // consume 50% energy
+    player.energy = Math.max(0, player.energy - player.maxEnergy*0.5);
+    player.throwing = true;
+    const aimAng = Math.atan2(input.mouseY - player.y, input.mouseX - player.x);
+    thrownSaber = {
+      x: player.x,
+      y: player.y,
+      angle: aimAng,
+      dist: 0,
+      maxDist: 250,
+      returning: false,
+      hitEnemies: new Set(),
+      hits: 0,
+      _reattach: false
+    };
+  }
+
+  // spawn
+  function spawnEnemy(){
+    const t = enemyTypes[Math.floor(Math.random()*enemyTypes.length)];
+    let x,y;
+    const side = Math.floor(Math.random()*4);
+    if(side===0){ x=-30; y=rand(0,H); }
+    else if(side===1){ x=W+30; y=rand(0,H); }
+    else if(side===2){ y=-30; x=rand(0,W); }
+    else { y=H+30; x=rand(0,W); }
+    enemies.push({ x,y, r:t.r, speed:t.speed, hp:t.hp, maxHp:t.hp, score:t.score, color:t.color, stun: 0 });
+  }
+
+  // main update
+  function update(dt){
+    if(paused) return;
+
+    // regen energy/handle cooldowns
+    player.energy = clamp(player.energy + 20*dt, 0, player.maxEnergy);
+    if(player.dashCooldown > 0) player.dashCooldown -= dt;
+    if(player.inv > 0) player.inv -= dt;
+
+    // movement
+    let dx = input.d - input.a, dy = input.s - input.w;
+    const len = Math.hypot(dx,dy);
+    if(player.dashing){
+      const dashDir = (dx!==0||dy!==0) ? Math.atan2(dy,dx) : 0;
+      const dashSpeed = player.speed * 2.5;
+      player.x += Math.cos(dashDir) * dashSpeed * dt;
+      player.y += Math.sin(dashDir) * dashSpeed * dt;
+      player.dashTime -= dt;
+      if(player.dashTime <= 0) player.dashing = false;
+    } else if(len > 0){
+      dx /= len; dy /= len;
+      player.x += dx * player.speed * dt;
+      player.y += dy * player.speed * dt;
     }
+    player.x = clamp(player.x, 16, W-16);
+    player.y = clamp(player.y, 16, H-16);
 
-    function clearExtraClouds() {
-      extraCloudsContainer.innerHTML = '';
+    // swing animation (continuous)
+    const aimAng = Math.atan2(input.mouseY - player.y, input.mouseX - player.x);
+    if(!player.throwing){
+      player.swingAngle = Math.sin(performance.now()/200)*0.05;
     }
+    // tip position used for melee AoE
+    const tipX = player.x + Math.cos(aimAng + player.swingAngle)*48;
+    const tipY = player.y + Math.sin(aimAng + player.swingAngle)*48;
 
-    function getIconDesc(code) {
-      let icon = 'fa-cloud', desc = 'Okänt';
-      if (code === 0) { icon='fa-sun'; desc='Klart'; }
-      else if (code === 1) { icon='fa-sun'; desc='Lätt molnighet'; }
-      else if (code === 2) { icon='fa-cloud-sun'; desc='Halvklart'; }
-      else if (code === 3) { icon='fa-cloud'; desc='Mulet'; }
-      else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
-        icon='fa-cloud-showers-heavy'; desc='Regn';
-      }
-      else if (code >= 71 && code <= 77) {
-        icon='fa-snowflake'; desc='Snö';
-      }
-      else if (code >= 95) {
-        icon='fa-cloud-bolt'; desc='Åska';
-      }
-      return { icon, desc };
-    }
+    // trail
+    player.trail.push({ x: tipX, y: tipY });
+    if(player.trail.length > 12) player.trail.shift();
 
-    function updateWeather(index, data) {
-      const code = data.daily.weathercode[index];
-      const max = Math.round(data.daily.temperature_2m_max[index]);
-      const min = Math.round(data.daily.temperature_2m_min[index]);
-      const { icon, desc } = getIconDesc(code);
-      weatherDiv.innerHTML = `
-        <h2>Din plats</h2>
-        <p>${index===0 ? 'Idag' : 'Imorgon'}</p>
-        <i class="fa-solid ${icon} fa-5x"></i>
-        <p class="temp">${max}°C / ${min}°C</p>
-        <p>${desc}</p>
-      `;
-      weatherDiv.classList.add('animate__fadeIn');
-      weatherDiv.classList.remove('animate__fadeOut');
-
-      // Regn
-      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
-        createRain();
+    // thrown saber logic
+    if(thrownSaber){
+      const speed = 600 * dt;
+      if(!thrownSaber.returning){
+        thrownSaber.x += Math.cos(thrownSaber.angle) * speed;
+        thrownSaber.y += Math.sin(thrownSaber.angle) * speed;
+        thrownSaber.dist += speed;
+        if(thrownSaber.dist > thrownSaber.maxDist) thrownSaber.returning = true;
       } else {
-        clearRain();
-      }
-
-      // Extra moln när mulet
-      if (code === 3) {
-        createExtraClouds();
-      } else {
-        clearExtraClouds();
-      }
-    }
-
-    function fetchWeather(lat, lon) {
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`)
-        .then(response => response.json())
-        .then(data => {
-          updateWeather(0, data);
-          tomorrowBtn.addEventListener('click', () => {
-            updateWeather(1, data);
-            tomorrowBtn.style.display = 'none';
-            todayBtn.style.display = 'inline-block';
-          });
-          todayBtn.addEventListener('click', () => {
-            updateWeather(0, data);
-            todayBtn.style.display = 'none';
-            tomorrowBtn.style.display = 'inline-block';
-          });
-        })
-        .catch(err => {
-          weatherDiv.innerHTML = '<p>Kunde inte hämta vädret.</p>';
-          console.error(err);
-        });
-    }
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          fetchWeather(position.coords.latitude, position.coords.longitude);
-        },
-        error => {
-          console.warn('Geolocation misslyckades eller nekades, visar Stockholm som standard.');
-          fetchWeather(59.3293, 18.0686); // fallback till Stockholm
+        // return to player
+        const toX = player.x - thrownSaber.x, toY = player.y - thrownSaber.y;
+        const distBack = Math.hypot(toX,toY);
+        if(distBack < 100){
+          // mark for safe reattach (defer removal until after loops)
+          thrownSaber._reattach = true;
+        } else {
+          const angBack = Math.atan2(toY,toX);
+          thrownSaber.x += Math.cos(angBack) * speed;
+          thrownSaber.y += Math.sin(angBack) * speed;
         }
-      );
-    } else {
-      console.warn('Geolocation inte tillgängligt, visar Stockholm som standard.');
-      fetchWeather(59.3293, 18.0686); // fallback till Stockholm
+      }
+
+      // saber AoE damage while flying (safe iteration)
+      for(let i=enemies.length-1;i>=0;i--){
+        const e = enemies[i];
+        // if enemy already removed by other logic skip
+        if(!e) continue;
+        const d = Math.hypot(e.x - thrownSaber.x, e.y - thrownSaber.y);
+        if(d < 40 && !thrownSaber.hitEnemies.has(e)){
+          e.hp -= 40;
+          thrownSaber.hitEnemies.add(e);
+          thrownSaber.hits++;
+          if(e.hp <= 0){
+            score += e.score;
+            enemies.splice(i,1);
+          }
+          if(thrownSaber.hits >= 10) thrownSaber.returning = true;
+        }
+      }
     }
-  </script>
+
+    // melee / parry area: continuous check (no spamming)
+    // We'll use the current tipX, tipY as the attack point and check nearby enemies.
+    for(let i=enemies.length-1;i>=0;i--){
+      const e = enemies[i];
+      if(!e) continue;
+      // if stunned, skip movement but still allow damage
+      const distTip = Math.hypot(e.x - tipX, e.y - tipY);
+      if(distTip < 48){
+        if(player.parryMode){
+          e.stun = 2.0; // 2 seconds
+        } else {
+          // apply damage scaled by dt so it's stable across frames
+          e.hp -= 40 * dt / (0.016); // same scale used earlier
+          if(e.hp <= 0){
+            score += e.score;
+            enemies.splice(i,1);
+            continue;
+          }
+        }
+      }
+    }
+
+    // enemy movement & stun
+    for(let i=enemies.length-1;i>=0;i--){
+      const e = enemies[i];
+      if(!e) continue;
+      if(e.stun > 0){
+        e.stun -= dt;
+        if(e.stun < 0) e.stun = 0;
+        continue;
+      }
+      // move toward player
+      const ang = Math.atan2(player.y - e.y, player.x - e.x);
+      e.x += Math.cos(ang) * e.speed * dt;
+      e.y += Math.sin(ang) * e.speed * dt;
+
+      // enemy touches player
+      const pd = Math.hypot(e.x - player.x, e.y - player.y);
+      if(pd < e.r + player.r && player.inv <= 0){
+        player.hp -= 10;
+        player.inv = 0.5;
+        if(player.hp <= 0){
+          paused = true; // game over pause
+        }
+      }
+    }
+
+    // apply reattach if flagged (deferred to avoid mid-loop null)
+    if(thrownSaber && thrownSaber._reattach){
+      thrownSaber = null;
+      player.throwing = false;
+    }
+
+    // spawn control
+    spawnTimer -= dt;
+    if(spawnTimer <= 0){
+      spawnTimer = Math.max(0.5, 1.8 - Math.min(1.4, score / 150));
+      spawnEnemy();
+    }
+
+    // update score display
+    scoreEl.textContent = 'Score: ' + score;
+  }
+
+  // draw
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // background gradient subtle
+    const g = ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#07121a'); g.addColorStop(1,'#04060a');
+    ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+    // enemies
+    for(const e of enemies){
+      // body
+      ctx.beginPath(); ctx.fillStyle = e.color; ctx.arc(e.x,e.y,e.r,0,Math.PI*2); ctx.fill();
+      // health bar
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.fillRect(e.x - e.r, e.y - e.r - 8, (e.hp / e.maxHp) * e.r * 2, 5);
+      // stun visual
+      if(e.stun > 0){
+        ctx.beginPath(); ctx.strokeStyle = 'yellow'; ctx.lineWidth = 2;
+        ctx.arc(e.x, e.y, e.r + 4, 0, Math.PI*2); ctx.stroke();
+      }
+    }
+
+    // saber trail
+    ctx.strokeStyle = player.saberColor; ctx.lineWidth = 4; ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    for(let i=0;i<player.trail.length;i++){
+      if(i===0) ctx.moveTo(player.trail[i].x, player.trail[i].y);
+      else ctx.lineTo(player.trail[i].x, player.trail[i].y);
+    }
+    ctx.stroke(); ctx.globalAlpha = 1;
+
+    // drawn thrown saber (if any)
+    if(thrownSaber){
+      ctx.save();
+      ctx.translate(thrownSaber.x, thrownSaber.y);
+      ctx.rotate(performance.now()/100);
+      ctx.fillStyle = player.saberColor;
+      ctx.globalAlpha = 0.95;
+      ctx.shadowColor = player.saberColor; ctx.shadowBlur = 14;
+      ctx.fillRect(-24, -6, 48, 12);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    } else {
+      // draw active saber at player's hand if not thrown
+      ctx.save();
+      ctx.translate(player.x, player.y);
+      const aimAng = Math.atan2(input.mouseY - player.y, input.mouseX - player.x);
+      ctx.rotate(aimAng + player.swingAngle);
+      ctx.fillStyle = player.saberColor; ctx.globalAlpha = 0.95;
+      ctx.shadowColor = player.saberColor; ctx.shadowBlur = 15;
+      ctx.fillRect(8, -6, 48, 12);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+
+    // draw player body
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.fillStyle = player.color;
+    ctx.beginPath(); ctx.arc(0,0,player.r,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+
+    // HUD bars near player: health/energy
+    const barWidth = 12, barHeight = 50, offsetX = 50;
+    ctx.fillStyle = 'lightgreen';
+    ctx.fillRect(player.x + offsetX, player.y - 40 + (barHeight * (1 - player.hp/player.maxHp)), barWidth, barHeight * (player.hp/player.maxHp));
+    ctx.fillStyle = 'lightblue';
+    ctx.fillRect(player.x + offsetX + barWidth + 4, player.y - 40 + (barHeight * (1 - player.energy/player.maxEnergy)), barWidth, barHeight * (player.energy/player.maxEnergy));
+
+    // small indicators
+    ctx.fillStyle = '#cbd';
+    ctx.font = '12px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('Mode: ' + (player.parryMode ? 'Parry' : 'Slash'), 12, 18);
+    ctx.fillText('Throw ready: ' + (!player.throwing && player.energy >= player.maxEnergy*0.5 ? 'Yes' : 'No'), 12, 34);
+
+    // pause overlay
+    if(paused){
+      ctx.fillStyle = 'rgba(2,6,10,0.6)'; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = '#dbeffc'; ctx.font='bold 36px system-ui'; ctx.textAlign='center';
+      ctx.fillText(player.hp<=0 ? 'You Died' : 'Paused', W/2, H/2);
+    }
+  }
+
+  // loop
+  function loop(t){
+    const now = t / 1000;
+    const dt = Math.min(0.033, now - lastTime || 0.016);
+    lastTime = now;
+    if(!paused) update(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // init
+  function init(){
+    spawnTimer = 0.5;
+    enemies.length = 0;
+    score = 0;
+    resetPlayer();
+    requestAnimationFrame(loop);
+  }
+  function resetPlayer(){
+    player.x = W/2; player.y = H/2;
+    player.hp = player.maxHp;
+    player.energy = player.maxEnergy;
+    player.throwing = false;
+    player.parryMode = false;
+    thrownSaber = null;
+    player.trail = [];
+  }
+
+  init();
+})();
+</script>
 </body>
 </html>
